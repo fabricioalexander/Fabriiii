@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti, Angeles 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  min-height:100vh;
+  background: #fff0f5;
+  font-family:'Nunito',sans-serif;
+  overflow-x:hidden;
+}
+
+/* ── FONDO ANIMADO ── */
+.bg-canvas {
+  position:fixed; inset:0; z-index:0;
+  background: radial-gradient(ellipse at 20% 20%, #ffe0ee 0%, transparent 55%),
+              radial-gradient(ellipse at 80% 80%, #fde8ff 0%, transparent 55%),
+              radial-gradient(ellipse at 60% 10%, #fff0d6 0%, transparent 45%),
+              #fff5f8;
+}
+
+/* Burbujas de fondo */
+.bubbles { position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+.bubble {
+  position:absolute; bottom:-60px;
+  border-radius:50%;
+  animation: rise linear infinite;
+  opacity:0;
+}
+@keyframes rise {
+  0%   { transform:translateY(0) scale(1); opacity:0.55; }
+  80%  { opacity:0.3; }
+  100% { transform:translateY(-110vh) scale(0.6); opacity:0; }
+}
+
+/* Estrellas parpadeantes */
+.stars { position:fixed; inset:0; z-index:1; pointer-events:none; }
+.star {
+  position:absolute; font-size:12px;
+  animation: twinkle ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity:0.15; transform:scale(0.8); }
+  50%     { opacity:0.9; transform:scale(1.2); }
+}
+
+/* ── SCREENS ── */
+.screen {
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+  min-height:100vh; position:relative; z-index:10;
+  padding:2rem 1rem;
+}
+.screen.active { display:flex; }
+
+/* ── PANTALLA 1: SOBRE ── */
+.env-title {
+  font-family:'Dancing Script',cursive;
+  font-size:2rem; color:#c2185b;
+  margin-bottom:2.5rem; text-align:center;
+  text-shadow: 0 2px 12px rgba(200,30,100,0.15);
+  animation: floatText 3s ease-in-out infinite;
+}
+@keyframes floatText {
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-6px); }
+}
+
+.envelope {
+  position:relative; width:280px; height:200px;
+  cursor:pointer; margin-bottom:2.5rem;
+  filter: drop-shadow(0 8px 24px rgba(220,80,130,0.22));
+  transition: transform 0.3s;
+}
+.envelope:hover { transform:scale(1.05) rotate(-1deg); }
+
+/* Cuerpo del sobre */
+.env-body {
+  position:absolute; inset:0;
+  background: linear-gradient(160deg,#fff5f9 60%,#fce4ec);
+  border-radius:6px 6px 14px 14px;
+  border:2px solid #f8bbd0;
+  overflow:hidden;
+}
+/* Solapa superior */
+.env-flap {
+  position:absolute; top:0; left:0; right:0;
+  height:0;
+  border-left:140px solid transparent;
+  border-right:140px solid transparent;
+  border-top:88px solid #f48fb1;
+  z-index:3;
+}
+/* Líneas decorativas del sobre */
+.env-line-l {
+  position:absolute; bottom:0; left:0;
+  width:0; height:0;
+  border-bottom:100px solid #fce4ec;
+  border-right:140px solid transparent;
+}
+.env-line-r {
+  position:absolute; bottom:0; right:0;
+  width:0; height:0;
+  border-bottom:100px solid #fce4ec;
+  border-left:140px solid transparent;
+}
+.env-seal {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-size:2.6rem; z-index:4;
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%,100% { transform:translate(-50%,-50%) scale(1); }
+  14%     { transform:translate(-50%,-50%) scale(1.2); }
+  28%     { transform:translate(-50%,-50%) scale(1); }
+  42%     { transform:translate(-50%,-50%) scale(1.15); }
+}
+
+/* Stickers alrededor del sobre */
+.sticker {
+  position:absolute; font-size:1.4rem;
+  animation: wiggle 2s ease-in-out infinite;
+}
+@keyframes wiggle {
+  0%,100% { transform:rotate(-8deg) scale(1); }
+  50%     { transform:rotate(8deg) scale(1.1); }
+}
+
+.btn-open {
+  background: linear-gradient(135deg,#f06292,#e91e8c,#c2185b);
+  color:#fff; border:none; border-radius:50px;
+  padding:14px 46px; font-size:1.1rem;
+  font-family:'Nunito',sans-serif; font-weight:600;
+  letter-spacing:0.05em; cursor:pointer;
+  box-shadow: 0 6px 22px rgba(200,30,100,0.4),
+              inset 0 1px 0 rgba(255,255,255,0.25);
+  transition:transform 0.2s,box-shadow 0.2s;
+  position:relative; overflow:hidden;
+}
+.btn-open::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.18),transparent);
+  border-radius:50px;
+}
+.btn-open:hover {
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 10px 30px rgba(200,30,100,0.5);
+}
+.btn-open:active { transform:translateY(0) scale(0.98); }
+
+/* ── PANTALLA 2: CARTA ── */
+#screen-letter { justify-content:flex-start; padding-top:2.5rem; }
+
+.letter-wrapper {
+  max-width:680px; width:100%;
+  animation: slideUp 0.7s cubic-bezier(.22,1,.36,1) forwards;
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(30px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.letter-paper {
+  background: linear-gradient(180deg, #fffdf9 0%, #fff9fc 100%);
+  border:1.5px solid #fad7e6;
+  border-radius:3px 3px 16px 16px;
+  padding:3rem 3.5rem;
+  position:relative;
+  box-shadow:
+    0 2px 0 #f8bbd0,
+    0 4px 0 #fce4ec,
+    0 12px 40px rgba(180,60,100,0.12);
+}
+/* Líneas de papel */
+.letter-paper::before {
+  content:'';
+  position:absolute; left:0; right:0; top:0; bottom:0;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 38px, #fde8f0 38px, #fde8f0 39px
+  );
+  border-radius:inherit;
+  opacity:0.35; pointer-events:none;
+}
+/* Margen izquierdo */
+.letter-paper::after {
+  content:'';
+  position:absolute; left:3.5rem; top:0; bottom:0; width:1px;
+  background:#fad7e6; opacity:0.6;
+}
+
+.letter-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:1.8rem; position:relative; z-index:1;
+}
+.letter-date {
+  font-size:0.82rem; color:#d4789a; font-style:italic;
+}
+.letter-deco { font-size:1.2rem; }
+
+.letter-salute {
+  font-family:'Dancing Script',cursive;
+  font-size:2rem; color:#ad1457;
+  margin-bottom:1.6rem; position:relative; z-index:1;
+}
+
+.letter-body {
+  font-size:1rem; line-height:2;
+  color:#4a2535; position:relative; z-index:1;
+}
+.letter-body p { margin-bottom:1.2rem; }
+.letter-body .highlight {
+  font-family:'Dancing Script',cursive;
+  font-size:1.15em; color:#c2185b;
+  background:linear-gradient(120deg,#fce4ec 0%,#f8bbd0 100%);
+  padding:1px 6px; border-radius:4px;
+}
+
+.letter-sign {
+  font-family:'Dancing Script',cursive;
+  font-size:1.5rem; color:#ad1457;
+  text-align:right; margin-top:2rem;
+  position:relative; z-index:1;
+}
+
+/* Decoración de la carta */
+.corner-deco {
+  position:absolute; font-size:1.1rem; opacity:0.5;
+}
+.corner-deco.tl { top:12px; left:14px; transform:rotate(-15deg); }
+.corner-deco.tr { top:12px; right:14px; transform:rotate(15deg); }
+.corner-deco.bl { bottom:14px; left:14px; transform:rotate(15deg); }
+.corner-deco.br { bottom:14px; right:14px; transform:rotate(-15deg); }
+
+/* ── SECCIÓN DESCUBRIR ── */
+.discover-section {
+  max-width:680px; width:100%;
+  padding:2.5rem 1rem 4rem;
+  text-align:center;
+  animation:slideUp 0.9s 0.2s cubic-bezier(.22,1,.36,1) both;
+}
+.discover-label {
+  font-family:'Dancing Script',cursive;
+  font-size:1.4rem; color:#8d3a5e; line-height:1.7;
+  margin-bottom:1.8rem;
+}
+.btn-discover {
+  background:white; color:#e91e8c;
+  border:2px solid #f48fb1; border-radius:50px;
+  padding:13px 38px; font-size:1rem;
+  font-family:'Nunito',sans-serif; font-weight:600;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(200,30,100,0.15);
+  transition:all 0.25s;
+}
+.btn-discover:hover {
+  background:#e91e8c; color:white;
+  border-color:#e91e8c;
+  transform:translateY(-3px);
+  box-shadow:0 8px 26px rgba(200,30,100,0.35);
+}
+
+/* ── PANTALLA 3: PREGUNTA ── */
+.question-card {
+  background:white;
+  border:2px solid #f8bbd0;
+  border-radius:28px;
+  max-width:440px; width:100%;
+  padding:3rem 2rem;
+  text-align:center;
+  box-shadow:0 8px 50px rgba(200,60,120,0.16),
+             0 2px 0 #f8bbd0;
+  animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.7); }
+  to   { opacity:1; transform:scale(1); }
+}
+
+.q-hearts { font-size:2.2rem; margin-bottom:1rem; letter-spacing:0.1em; }
+.question-text {
+  font-family:'Dancing Script',cursive;
+  font-size:2rem; color:#ad1457;
+  margin-bottom:0.5rem; line-height:1.35;
+}
+.q-sub {
+  font-size:0.88rem; color:#d4789a;
+  margin-bottom:2rem;
+}
+.btn-yes {
+  display:block; width:100%;
+  background:linear-gradient(135deg,#f06292,#e91e8c,#c2185b);
+  color:white; border:none; border-radius:50px;
+  padding:14px; font-size:1.05rem;
+  font-family:'Nunito',sans-serif; font-weight:700;
+  cursor:pointer; margin-bottom:0.8rem;
+  box-shadow:0 5px 20px rgba(200,30,100,0.38);
+  transition:transform 0.2s,box-shadow 0.2s;
+  letter-spacing:0.03em;
+}
+.btn-yes:hover {
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 10px 28px rgba(200,30,100,0.5);
+}
+.btn-no {
+  display:block; width:100%;
+  background:transparent; color:#c9a0b0;
+  border:1.5px solid #f0d0de; border-radius:50px;
+  padding:12px; font-size:0.95rem;
+  font-family:'Nunito',sans-serif;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-no:hover { background:#fce4ec; color:#ad7090; }
+
+/* ── PANTALLA 4: RESPUESTA ── */
+.answer-card {
+  background:white;
+  border:2px solid #f8bbd0;
+  border-radius:28px;
+  max-width:480px; width:100%;
+  padding:3rem 2rem;
+  text-align:center;
+  box-shadow:0 8px 50px rgba(200,60,120,0.16);
+  animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+.answer-big { font-size:3.5rem; margin-bottom:1rem; }
+.answer-title {
+  font-family:'Dancing Script',cursive;
+  font-size:2rem; color:#ad1457; margin-bottom:1rem;
+}
+.answer-text {
+  font-size:0.98rem; line-height:1.9; color:#4a2535;
+}
+.confetti-line { font-size:1.6rem; margin:1rem 0 0.5rem; letter-spacing:0.15em; }
+
+/* ── CONFETTI JS ── */
+.confetti-piece {
+  position:fixed; width:8px; height:8px;
+  border-radius:2px; pointer-events:none; z-index:999;
+  animation:confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { transform:translateY(-10px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="bubbles" id="bubbles"></div>
+<div class="stars" id="stars"></div>
+
+<!-- ═══════════════════════════
+     PANTALLA 1 — SOBRE
+═══════════════════════════ -->
+<div id="screen-envelope" class="screen active">
+  <p class="env-title">Para ti, con mucho amor 💌</p>
+
+  <div style="position:relative; margin-bottom:0.5rem;">
+    <!-- Stickers alrededor -->
+    <span class="sticker" style="top:-20px;left:-30px;animation-delay:0s">🌸</span>
+    <span class="sticker" style="top:-20px;right:-30px;animation-delay:0.4s">✨</span>
+    <span class="sticker" style="bottom:0;left:-36px;animation-delay:0.8s">🌷</span>
+    <span class="sticker" style="bottom:0;right:-36px;animation-delay:1.2s">💫</span>
+
+    <div class="envelope" onclick="openLetter()">
+      <div class="env-body">
+        <div class="env-flap"></div>
+        <div class="env-line-l"></div>
+        <div class="env-line-r"></div>
+        <div class="env-seal">💌</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-open" onclick="openLetter()">Abrir 💖</button>
+</div>
+
+<!-- ═══════════════════════════
+     PANTALLA 2 — CARTA
+═══════════════════════════ -->
+<div id="screen-letter" class="screen">
+  <div class="letter-wrapper">
+    <div class="letter-paper">
+      <span class="corner-deco tl">🌸</span>
+      <span class="corner-deco tr">✨</span>
+      <span class="corner-deco bl">💕</span>
+      <span class="corner-deco br">🌷</span>
+
+      <div class="letter-header">
+        <span class="letter-date">Junio, 2026</span>
+        <span class="letter-deco">🌹🌸🌹</span>
+      </div>
+
+      <div class="letter-salute">Mi querida Angeles,</div>
+
+      <div class="letter-body">
+        <p>
+          Hay momentos en la vida en que las palabras se quedan cortas,
+          en que el corazón late más fuerte de lo habitual y la mente solo
+          puede pensar en una persona. Hoy soy yo quien siente eso,
+          y tú eres esa persona. 🥺
+        </p>
+        <p>
+          Desde que te conocí, algo en mí cambió de una forma que no supe
+          explicar de inmediato. Poco a poco fui entendiendo que era la magia
+          de tenerte cerca, de escucharte, de sentir tu presencia. Y esa magia
+          no ha dejado de crecer desde entonces. ✨
+        </p>
+        <p>
+          Me cautiva <span class="highlight">la forma en que me tratas</span>, esa
+          amabilidad tan tuya, genuina y sin esfuerzo, que llega directito al alma.
+          No todo el mundo tiene ese don tan especial, y tú lo tienes de sobra. 🌷
+        </p>
+        <p>
+          Me pierdo en <span class="highlight">tus ojitos</span>, en esa mirada que
+          habla sin pronunciar una sola palabra. Hay en ellos una luz preciosa que
+          ilumina cualquier lugar al que llegues. Podrías iluminar el mundo entero
+          con esa mirada. 🌟
+        </p>
+        <p>
+          Y tu sonrisa... <span class="highlight">esa linda sonrisa tuya</span>. 
+          No hay manera de describirla sin quedarse corto. Cuando sonríes, todo lo
+          demás deja de importar. El mundo entero se ve mejor. Simplemente mejor. 💗
+        </p>
+        <p>
+          Eres especial de una manera que muy pocas personas lo son. Eres
+          auténtica, eres brillante, eres única y eso es exactamente lo que
+          me tiene aquí, escribiéndote con el corazón completamente en la mano. 🌸
+        </p>
+        <p>
+          No quiero guardar esto para mí un día más. Quiero que lo sepas,
+          quiero que lo sientas, porque te lo mereces con creces. 💝
+        </p>
+      </div>
+
+      <div class="letter-sign">
+        Con todo mi corazón 🌹<br>
+        <span style="font-size:1rem;color:#d4789a;">siempre tuyo…</span>
+      </div>
+    </div>
+
+    <div class="discover-section">
+      <p class="discover-label">
+        Ha llegado el momento de hacerte<br>la siguiente pregunta… 🌸
+      </p>
+      <button class="btn-discover" onclick="goToQuestion()">
+        Lo quiero descubrir ✨
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     PANTALLA 3 — PREGUNTA
+═══════════════════════════ -->
+<div id="screen-question" class="screen">
+  <div class="question-card">
+    <div class="q-hearts">💗 💖 💗</div>
+    <div class="question-text">¿Puedo ser tu novio?</div>
+    <p class="q-sub">Tómate todo el tiempo que necesites 🌸</p>
+    <button class="btn-yes" onclick="answer(true)">
+      💖 Sí, sí quiero 💖
+    </button>
+    <button class="btn-no" onclick="answer(false)">
+      No, no quiero
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     PANTALLA 4 — RESPUESTA
+═══════════════════════════ -->
+<div id="screen-answer" class="screen">
+  <div class="answer-card" id="answer-card"></div>
+</div>
+
+<script>
+/* ── BURBUJAS ── */
+const bDiv = document.getElementById('bubbles');
+const bColors = ['#fce4ec','#f8bbd0','#e1bee7','#ffeeff','#fff0d6'];
+for(let i=0;i<18;i++){
+  const b=document.createElement('div'); b.className='bubble';
+  const size=20+Math.random()*40;
+  b.style.cssText=`width:${size}px;height:${size}px;
+    left:${Math.random()*100}vw;
+    background:${bColors[Math.floor(Math.random()*bColors.length)]};
+    animation-duration:${8+Math.random()*10}s;
+    animation-delay:${Math.random()*10}s`;
+  bDiv.appendChild(b);
+}
+
+/* ── ESTRELLITAS ── */
+const sDiv=document.getElementById('stars');
+const sSymbols=['✦','✧','⋆','˚','·'];
+for(let i=0;i<35;i++){
+  const s=document.createElement('div'); s.className='star';
+  s.textContent=sSymbols[Math.floor(Math.random()*sSymbols.length)];
+  s.style.cssText=`left:${Math.random()*100}vw;top:${Math.random()*100}vh;
+    color:#f48fb1;
+    animation-duration:${2+Math.random()*3}s;
+    animation-delay:${Math.random()*4}s`;
+  sDiv.appendChild(s);
+}
+
+/* ── NAVEGACIÓN ── */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active'); s.style.display='none';
+  });
+  const t=document.getElementById(id);
+  t.style.display='flex'; t.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openLetter(){ showScreen('screen-letter'); }
+function goToQuestion(){ showScreen('screen-question'); }
+
+/* ── CONFETTI ── */
+function launchConfetti(){
+  const colors=['#f48fb1','#f8bbd0','#ce93d8','#fff176','#80deea','#ffcc80'];
+  for(let i=0;i<80;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div'); c.className='confetti-piece';
+      c.style.cssText=`left:${Math.random()*100}vw;
+        top:0;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        transform:rotate(${Math.random()*360}deg);
+        animation-duration:${1.5+Math.random()*2}s;
+        animation-delay:0s;
+        border-radius:${Math.random()>0.5?'50%':'2px'}`;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),4000);
+    },i*25);
+  }
+}
+
+function answer(yes){
+  const card=document.getElementById('answer-card');
+  if(yes){
+    launchConfetti();
+    card.innerHTML=`
+      <div class="confetti-line">🎉🌸✨💖✨🌸🎉</div>
+      <div class="answer-big">🥰💗🥰</div>
+      <div class="answer-title">¡Gracias, Angeles!</div>
+      <p class="answer-text">
+        Este momento lo voy a guardar en mi corazón para siempre. 💗<br><br>
+        Te amo con todo mi ser, con cada latido, con cada pensamiento,
+        con cada parte de quien soy.<br><br>
+        Me dispongo a todo para que nuestra historia de amor no tenga fin.
+        Juntos vamos a construir algo tan hermoso y tan nuestro que
+        el tiempo se quede corto para vivirlo. 🌹<br><br>
+        Gracias por decir que sí. Gracias por elegirme.
+        Eres todo para mí. 💖
+      </p>
+      <div class="confetti-line">💖🌸💖🌸💖</div>`;
+  } else {
+    card.innerHTML=`
+      <div class="answer-big">🌸🤍🌸</div>
+      <div class="answer-title">Gracias igualmente, Angeles</div>
+      <p class="answer-text">
+        Respeto tu decisión con todo el corazón. 🤍<br><br>
+        Que hayas leído mis palabras ya es más de lo que merecía.
+        No cambia nada de lo que siento ni de lo que pienso de ti,
+        sigues siendo alguien increíble y muy especial para mí.<br><br>
+        Siempre estaré para ti, de la manera que necesites.
+        Siempre, sin importar nada. 🌸
+      </p>`;
+  }
+  showScreen('screen-answer');
+}
+</script>
+</body>
+</html>
